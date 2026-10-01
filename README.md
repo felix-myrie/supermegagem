@@ -1,6 +1,6 @@
 # Megagem: Playroom Proof of Concept
 
-A browser version of Jane Street's Megagem, with a shared host board and a phone-friendly player view. The live version uses Playroom Kit rooms; a sample table with simulated opponents can be opened without an account.
+A browser version of Jane Street's Megagem, with a shared host board and a phone-friendly player view. The live version uses Playroom Kit rooms and a sample table with simulated opponents can be opened without an account.
 
 ## Run it
 
