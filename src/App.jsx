@@ -31,6 +31,7 @@ import {
 import {
   CHART_A,
   COLORS,
+  assignCurrencyNames,
   canBid,
   createGame,
   isOrphanedRoomJoin,
@@ -41,8 +42,6 @@ import {
 } from './game.js';
 
 const gameId = import.meta.env.VITE_PLAYROOM_GAME_ID || '';
-const PLAYER_NAMES = ['Mira', 'Sol', 'Theo', 'June', 'Kit'];
-
 export default function App() {
   const [connection, setConnection] = useState(null);
   const inviteCode = new URLSearchParams(window.location.hash.slice(1)).get('r') || '';
@@ -165,9 +164,11 @@ function PlayroomTable({ roomCode, onExit }) {
   const allBids = usePlayersState('megagem:bid');
   const handMap = Object.fromEntries(allHands.map(({ player, state }) => [player.id, state || []]));
   const bidMap = Object.fromEntries(allBids.map(({ player, state }) => [player.id, state]));
-  const connectedRoster = players.map((player, index) => ({
+  const nameIds = game?.players || players.filter((player) => !isHost || player.id !== me.id).map((player) => player.id);
+  const currencyNames = assignCurrencyNames(nameIds);
+  const connectedRoster = players.map((player) => ({
     id: player.id,
-    name: player.getProfile()?.name || PLAYER_NAMES[index % PLAYER_NAMES.length],
+    name: currencyNames[player.id] || 'Disconnected',
     color: player.getProfile()?.color?.hexString,
   }));
   const roster = game
@@ -252,7 +253,8 @@ function PlayroomTable({ roomCode, onExit }) {
 
 function Lobby({ isHost, onExit, onStart, players, roomCode }) {
   const [copied, setCopied] = useState(false);
-  const inviteLink = `${window.location.origin}${window.location.pathname}#r=${roomCode}`;
+  const gameUrl = `${window.location.origin}${window.location.pathname}`;
+  const inviteLink = `${gameUrl}#r=${roomCode}`;
   async function copyInvite() {
     await navigator.clipboard?.writeText(inviteLink);
     setCopied(true);
@@ -287,8 +289,8 @@ function Lobby({ isHost, onExit, onStart, players, roomCode }) {
           {players.length > MAX_PLAYERS && <p className="connection-error">A table can hold at most {MAX_PLAYERS} players plus its host.</p>}
         </div>
         <aside className="invite-card">
-          <div className="qr-frame"><QRCodeSVG value={inviteLink} size={186} bgColor="#f3f3e8" fgColor="#14231b" /></div>
-          <div><strong>Scan to join</strong><p>Open this table on a phone or second screen.</p></div>
+          <div className="qr-frame"><QRCodeSVG value={gameUrl} size={186} bgColor="#f3f3e8" fgColor="#14231b" /></div>
+          <div><strong>Scan to open Megagem</strong><p>Enter the room code to join this table.</p></div>
           <div className="invite-code"><span>JOIN WITH CODE</span><b>{roomCode || '-----'}</b></div>
         </aside>
       </section>
@@ -303,9 +305,9 @@ function DemoTable({ onExit }) {
     return { ...created, bids: {} };
   });
   const players = [
-    { id: 'mira', name: 'Mira', color: '#ed9280' },
-    { id: 'sol', name: 'Sol', color: '#83b9d5' },
-    { id: 'theo', name: 'Theo', color: '#d5ee67' },
+    { id: 'mira', name: 'Sterling', color: '#ed9280' },
+    { id: 'sol', name: 'Dollar', color: '#83b9d5' },
+    { id: 'theo', name: 'Yuan', color: '#d5ee67' },
   ];
   const game = snapshot.game;
 
@@ -380,7 +382,10 @@ function GameBoard({ bids, game, hand, isHost, isDemo, meId, onExit, onRevealBid
     <main className="game-page">
       <header className="game-header">
         <Brand />
-        <div className="header-center"><span className="live-dot" /> {game.phase === 'complete' ? 'GAME COMPLETE' : `ROUND ${String(game.round).padStart(2, '0')}`}</div>
+        <div className="header-center">
+          <span className="round-status"><span className="live-dot" /> {game.phase === 'complete' ? 'GAME COMPLETE' : `ROUND ${String(game.round).padStart(2, '0')}`}</span>
+          {!isHost && meId && <strong className="header-player-name">{nameFor(players, meId)} · YOU</strong>}
+        </div>
         <div className="header-actions">
           {!isDemo && <button className="room-pill" onClick={copyInvite} title="Copy room invitation">
             <span>{copied ? 'COPIED' : roomCode}</span>{copied ? <Check size={14} /> : <Copy size={14} />}

@@ -1,6 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { canBid, createGame, isOrphanedRoomJoin, resolveAuction, resolveBids, scoreGame } from './game.js';
+import { assignCurrencyNames, canBid, createGame, isOrphanedRoomJoin, resolveAuction, resolveBids, scoreGame } from './game.js';
+
+test('assigns distinct currency names consistently regardless of player order', () => {
+  const names = assignCurrencyNames(['c', 'a', 'b']);
+  assert.deepEqual(names, { a: 'Sterling', b: 'Dollar', c: 'Yuan' });
+  assert.deepEqual(assignCurrencyNames(['b', 'c', 'a']), names);
+});
 
 test('sets starting coins, information hands, and gem market by player count', () => {
   const three = createGame(['a', 'b', 'c'], () => 0.5);

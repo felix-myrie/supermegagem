@@ -1,6 +1,13 @@
 export const COLORS = ['Yellow', 'Blue', 'Purple', 'Pink', 'Green'];
+export const CURRENCY_NAMES = ['Sterling', 'Dollar', 'Yuan', 'Euro', 'Rupee'];
 export const MIN_PLAYERS = 3;
 export const MAX_PLAYERS = 5;
+
+export function assignCurrencyNames(playerIds) {
+  return Object.fromEntries(
+    [...playerIds].sort().map((playerId, index) => [playerId, CURRENCY_NAMES[index % CURRENCY_NAMES.length]]),
+  );
+}
 
 export function isOrphanedRoomJoin(roomCode, joinedAsHost) {
   return Boolean(roomCode.trim()) && joinedAsHost;

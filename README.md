@@ -7,7 +7,7 @@ A browser version of Jane Street's Megagem, with a shared host board and a phone
 1. Install dependencies: `npm install`
 2. Copy `.env.example` to `.env.local` and set `VITE_PLAYROOM_GAME_ID` using a game ID from the [Playroom developer portal](https://dev.joinplayroom.com/).
 3. Start the app with `npm run dev`.
-4. Host a table, then share its QR code or room code. Join from 3 to 5 player devices and start once everyone is in. The host runs the board and does not take a game seat.
+4. Host a table, then share its QR code and room code. The QR code opens Megagem; players enter the room code to join. Join from 3 to 5 player devices and start once everyone is in. The host runs the board and does not take a game seat.
 
 Select **Explore a sample table** on the opening screen to try the host board without configuring Playroom. The sample bidders and their bids are simulated.
 
